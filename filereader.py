@@ -79,12 +79,12 @@ def file_reader(file_name):
     # graph.triangulation()
     # graph.maxcliques()
     print('test result')
-    graph.test()
+    #graph.test()
     JT = graph.generate_JT()
     JT.traverse()
 
 if __name__ == '__main__':
-    file_reader('1.uai')
+    file_reader('6.uai')
     # file_reader('2.uai')
     # file_reader('3.uai')
     # file_reader('4.uai')

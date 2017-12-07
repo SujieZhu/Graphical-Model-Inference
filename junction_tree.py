@@ -65,11 +65,12 @@ class junction_tree:
                 self.next[self.JT_nodes[edge[0]]].add(self.JT_nodes[edge[1]])
                 self.next[self.JT_nodes[edge[1]]].add(self.JT_nodes[edge[0]])     
 
-        #print('*'*30, 'build graph')
-        #for x in self.next:
-        #    print(x.nodes)
-        #    for v in self.next[x]:
-        #        print('next', v.nodes)
+        print('*'*30, 'build graph')
+        for x in self.next:
+            print(x.nodes)
+            print(x.table)
+            for v in self.next[x]:
+                print('next', v.nodes)
 
     def find_parent(self, x):
         if self.parent[x] == x:

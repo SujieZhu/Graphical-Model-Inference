@@ -154,6 +154,8 @@ class Graph:
     def generate_JT(self):
         self.triangulation()
         self.maxcliques()
+        #for clique in self.cliques:
+        #    clique.condition(self.evidence)
         JT = junction_tree(self.cliques, self.variable_cardinality)
         return JT
 

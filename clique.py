@@ -24,25 +24,31 @@ class Clique:
     def times(self, clique, dimension):
         self.nodes.union(clique.nodes)
         self.node_list = list(self.nodes)
+        print(self.nodes_list)
         new_dimension = tuple(map(lambda x:dimension[x] if x in clique.nodes_list else 1, self.nodes_list))
-        # print('new_dimension', new_dimension)
+        print('new_dimension', new_dimension)
+        print('origin_dimension', self.nodes)
+        print('small', clique.nodes)
         if self.table.size == 0:
             self_dimension = tuple(map(lambda x:dimension[x], self.nodes_list))
             self.table = np.ones(self_dimension)
         np.multiply(clique.table.reshape(new_dimension), self.table, out = self.table)
+        print('after time', self.nodes)
+        print(self.table)
 
 
     def condition(self, evidence):
-        #print('*'*20)
-        #print('Before condition')
-        #print('vars',self.nodes)
-        #print('table',self.table)
+        print('*'*20)
+        print('Before condition')
+        print('vars',self.nodes)
+        print('table',self.table)
         axis = tuple( evidence[v] if v in evidence else slice(None) for v in self.nodes )
         evidence_vars = [ v for j,v in enumerate(self.nodes) if axis[j] != slice(None) ] 
         self.table = self.table[axis]
         self.nodes -= set(evidence_vars)
-        #print('vars',self.nodes)
-        #print('table',self.table)
+        self.nodes_list = list(self.nodes)
+        print('vars',self.nodes)
+        print('table',self.table)
 
     def sum(self, remain=None, out=None):
         if (remain is None): elim = self.nodes
