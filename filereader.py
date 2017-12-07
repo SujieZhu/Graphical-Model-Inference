@@ -13,19 +13,19 @@ def file_reader(file_name):
     with open(dir + '/uai/' + file_name) as f:
         line = f.readline()
         graph_type = line.strip('\n')
-        print (graph_type)
+        #print (graph_type)
         node_number = int(f.readline())
-        print (node_number)
+        #print (node_number)
         line = f.readline().strip(' \n').split(' ')
         variable_cardinality = list(map(int, line))
-        print (variable_cardinality)
+        #print (variable_cardinality)
         clique_number = int(f.readline())
-        print (clique_number)
+        #print (clique_number)
         graph = Graph(graph_type, node_number, variable_cardinality, clique_number)
         
         for i in range(clique_number): # start from 0
             line = f.readline().strip('\n').strip(' ')
-            print(line)
+            #print(line)
             try:
                 line = np.array(list(map(int,line.split('\t'))))
             except Exception as e:
@@ -56,7 +56,6 @@ def file_reader(file_name):
     ### read the evidence file
     with open(dir + '/uai/' + file_name +'.evid') as evidence:
         line = evidence.readline().strip('\n').strip(' ')
-        print(line)
         try:
             line = np.array(list(map(int,line.split('\t'))))
         except Exception as e:
@@ -79,12 +78,12 @@ def file_reader(file_name):
     # graph.triangulation()
     # graph.maxcliques()
     print('test result')
-    graph.test()
+    #graph.test()
     JT = graph.generate_JT()
     JT.traverse()
 
 if __name__ == '__main__':
-    file_reader('1.uai')
+    file_reader('3.uai')
     # file_reader('2.uai')
     # file_reader('3.uai')
     # file_reader('4.uai')

@@ -61,7 +61,7 @@ class Clique:
           self.table = np.sum(self.table, axis=axis)
         self.nodes = self.nodes - elim
         #print('*'*30, 'after eliminate', self.nodes)
-        print(self.table, self.table.shape)
+        #print(self.table, self.table.shape)
 
 class Graph:
     """
@@ -181,24 +181,24 @@ class Graph:
             super_clique = self.super_cliques(clique)
             largest = super_clique[-1]
             if(largest != clique):
-                # largest.times(clique, self.variable_cardinality)
-                for supers in super_clique:
-                    if supers not in absorb:
-                        absorb[supers] = []
-                    absorb[supers].append(clique)
+                largest.times(clique, self.variable_cardinality)
+                #for supers in super_clique:
+                #    if supers not in absorb:
+                #        absorb[supers] = []
+                #    absorb[supers].append(clique)
                 eliminate.append(clique)
         
-        print('maxcliques:')
-        for clique in self.cliques:
-            if clique in eliminate:
-                continue
-            if clique not in absorb:
-                continue
-            print('maxcliques', clique.nodes)
-            for small_clique in absorb[clique]:
-                print('smaller cliques', small_clique.nodes)
-                clique.times(small_clique, self.variable_cardinality)
-                print('after absorb', clique.table)
+        #print('maxcliques:')
+        #for clique in self.cliques:
+        #    if clique in eliminate:
+        #        continue
+        #    if clique not in absorb:
+        #        continue
+        #    print('maxcliques', clique.nodes)
+        #    for small_clique in absorb[clique]:
+        #        print('smaller cliques', small_clique.nodes)
+        #        clique.times(small_clique, self.variable_cardinality)
+        #        print('after absorb', clique.table)
             #print(clique.nodes)
             #print(clique.table)
             #print(clique.table.shape)
@@ -221,6 +221,8 @@ class Graph:
         all_clique = Clique(self.node_number, range(self.node_number))
         for clique in self.cliques:
             all_clique.times(clique, self.variable_cardinality)
+        #print(all_clique.table)
+        all_clique.sum()
+        print('ground truth?')
         print(all_clique.table)
-        print(all_clique.sum())
 
