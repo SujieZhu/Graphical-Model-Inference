@@ -150,12 +150,17 @@ class Graph:
             for node in clique.nodes:
                 self.node_sharing_cliques[node].discard(clique)
 
+    def condition(self):
+        for evidence in self.evidence:
+            self.variable_cardinality[evidence] = 1
+        for clique in self.cliques:
+            clique.condition(self.evidence, self.variable_cardinality)
 
     def generate_JT(self):
+        self.condition()
         self.triangulation()
         self.maxcliques()
-        #for clique in self.cliques:
-        #    clique.condition(self.evidence)
+
         JT = junction_tree(self.cliques, self.variable_cardinality)
         return JT
 

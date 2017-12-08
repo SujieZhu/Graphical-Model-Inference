@@ -84,7 +84,7 @@ def file_reader(file_name):
     JT.traverse()
 
 if __name__ == '__main__':
-    file_reader('6.uai')
+    file_reader('3.uai')
     # file_reader('2.uai')
     # file_reader('3.uai')
     # file_reader('4.uai')

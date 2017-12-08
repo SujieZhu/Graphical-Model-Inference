@@ -12,12 +12,12 @@ class junction_tree:
     def build_tree(self):
         edges = self.build_graph()
         self.MaximumSpanningTree(edges)
-        root = self.JT_nodes[0]
+        root = self.JT_nodes[-1]
         added = set()
         next_round = [root]
         while len(next_round) != 0:
+            new_next_round = []
             for clique in next_round:
-                new_next_round = []
                 added.add(clique)
                 for adjacent_clique in self.next[clique]:
                     if adjacent_clique in added:
@@ -27,7 +27,9 @@ class junction_tree:
                     self.child[clique].add(adjacent_clique)
                     new_next_round.append(adjacent_clique)
                     # added.add(adjacent_clique)
-            next_round = new_next_round
+            next_round = new_next_round[:]
+            del new_next_round
+                
         return root
 
     def build_graph(self):
@@ -63,14 +65,10 @@ class junction_tree:
                 if self.JT_nodes[edge[1]] not in self.next:
                     self.next[self.JT_nodes[edge[1]]] = set()
                 self.next[self.JT_nodes[edge[0]]].add(self.JT_nodes[edge[1]])
-                self.next[self.JT_nodes[edge[1]]].add(self.JT_nodes[edge[0]])     
+                self.next[self.JT_nodes[edge[1]]].add(self.JT_nodes[edge[0]]) 
+                #print(self.JT_nodes[edge[0]].nodes, 'adding edes',self.JT_nodes[edge[1]].nodes )    
 
-        print('*'*30, 'build graph')
-        for x in self.next:
-            print(x.nodes)
-            print(x.table)
-            for v in self.next[x]:
-                print('next', v.nodes)
+
 
     def find_parent(self, x):
         if self.parent[x] == x:
@@ -83,23 +81,25 @@ class junction_tree:
 
     def traverse(self):
         root = self.build_tree()
-        print('*'*30)
-        print('traverse')
-        for x in self.child:
-            print(x.nodes)
-            for v in self.child[x]:
-                print('next', v.nodes)
-        print('*'*30)
+        #print('*'*30)
+        #print('traverse')
+        #for x in self.child:
+        #    print(x.nodes)
+        #    for v in self.child[x]:
+        #        print('next', v.nodes)
+        #print('*'*30)
+        #print('PostOrder')
         self.PostOrder(root, root)
         root.sum()
         print('final result')
         print(root.table)
+        print(np.log10(root.table))
 
     def PostOrder(self, root, father):
         if root in self.child:
             for child in self.child[root]:
                 self.PostOrder(child,root)
                 root.times(child, self.variable_cardinality)
-        
+        #print(root.nodes, '\t parent:', father.nodes)
         root.sum(root.nodes.intersection(father.nodes))
         return
