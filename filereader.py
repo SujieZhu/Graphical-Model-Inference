@@ -5,9 +5,11 @@ import numpy as np
 from graph import Graph
 from clique import Clique
 from junction_tree import junction_tree
+from factorgraph import FactorGraph
+import time
 
 
-def file_reader(file_name):
+def file_reader(file_name, exact_method = True):
     """Parse the graph structure and the look up table from the uai and evid file"""
     dir = os.path.dirname(os.path.realpath(__file__))
     ### read the uai file
@@ -17,8 +19,13 @@ def file_reader(file_name):
         #print (graph_type)
         node_number = int(f.readline())
         #print (node_number)
-        line = f.readline().strip(' \n').split(' ')
-        variable_cardinality = list(map(int, line))
+        line = f.readline().strip(' \n').strip(' ')
+        try:
+            line2 = line.split(' ')
+            variable_cardinality = list(map(int, line2))
+        except Exception as e:
+            line2 = line.split("  ")
+            variable_cardinality = list(map(int, line2))
         #print (variable_cardinality)
         clique_number = int(f.readline())
         #print (clique_number)
@@ -55,6 +62,8 @@ def file_reader(file_name):
             graph.add_clique_table(i, psi)
 
     ### read the evidence file
+    
+    """
     with open(dir + '/uai/' + file_name +'.evid') as evidence:
         line = evidence.readline().strip('\n').strip(' ')
         try:
@@ -67,7 +76,7 @@ def file_reader(file_name):
             for i in range(0, evid_size):
                 evidence[line[2*i+1]] = line[2*i+2]
             graph.set_evidence(evidence)
-
+    """
 
 
     # test for the parse
@@ -78,13 +87,43 @@ def file_reader(file_name):
 
     # graph.triangulation()
     # graph.maxcliques()
-    print('test result')
-    #graph.test()
-    JT = graph.generate_JT()
-    JT.traverse()
+    # 
+    # 
+    # 
+    
+    if exact_method:
+        start = time.clock()
+        #print('test result')
+        #graph.test()
+        JT = graph.generate_JT()
+        JT.traverse()
+
+        elapsed = (time.clock() - start)
+        print("Time used:",elapsed,'s')
+    
+    else:
+        #######################
+        #Here to run the LBP
+        ######################
+        start = time.clock()
+        graph.pairwise()
+        factorgraph = FactorGraph(graph)
+        factorgraph.LBP(normalize = True)
+
+        factorgraph.calculate_z()
+        print("Time used",time.clock()-start,'s')
+
+    
 
 if __name__ == '__main__':
-    file_reader('3.uai')
-    # file_reader('2.uai')
+    #for i in range(8,12):
+    #    print('markov%s.uai result:'%(i))
+    #    file_reader('markov%s.uai'%(i))
+    filename = 'markov3.uai'
+    print("Exact Inference:")
+    file_reader(filename)
+    print("*"*50)
+    print("Approximate Inference")
+    file_reader(filename,False)
     # file_reader('3.uai')
     # file_reader('4.uai')

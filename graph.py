@@ -54,10 +54,20 @@ class Graph:
     def add_clique_table(self, index_of_clique, table):
         """add the look up table for the specified clique"""
         size = ()
-        for node in self.cliques[index_of_clique].nodes:
+        for node in self.cliques[index_of_clique].nodes_list:
             size = size + (self.variable_cardinality[node],)
         # print(size)
-        self.cliques[index_of_clique].set_table(np.array(table).reshape(size))
+        
+        previous = self.cliques[index_of_clique].nodes_list[:]
+        self.cliques[index_of_clique].nodes_list = sorted(self.cliques[index_of_clique].nodes_list)
+        #print(self.cliques[index_of_clique].nodes_list)
+        index = []
+        for i in range(len(previous)):
+            index.append(self.cliques[index_of_clique].nodes_list.index(previous[i]))
+        #print("index",index)
+        #print(np.array(table).reshape(size))
+        self.cliques[index_of_clique].set_table(np.array(table).reshape(size).transpose(index))
+        #print(self.cliques[index_of_clique].table)
 
     def set_evidence(self, evidence):
         """ set the evidences of the graph when doing the inference"""
@@ -88,7 +98,7 @@ class Graph:
         neighbor.difference_update(eliminated)
         neighbor.add(node)
         for pre_clique in self.cliques:
-            if neighbor.intersection(pre_clique.nodes) == neighbor:
+            if neighbor.intersection(pre_clique.nodes) == neighbor: #neighbor and itself are already provided
                 #print(node, 'not add clique')
                 return node, min_fill
         clique = Clique(len(neighbor), neighbor)
@@ -173,3 +183,53 @@ class Graph:
         print('ground truth?')
         print(all_clique.table)
 
+    def pairwise(self):
+        eliminate = []
+        for clique in self.cliques:
+            if(clique.size > 2):
+                self.add_pairwise(clique)
+                eliminate.append(clique)
+                #print("eliminate", clique.nodes)
+        self.eliminate_clique(eliminate)
+
+    def add_pairwise(self,clique):
+        new_card = clique.table.size
+        self.variable_cardinality.append(new_card)
+        #print("Z size", new_card)
+        label = self.node_number
+        
+        Z = Clique(1,[label])
+        self.adjacent[self.node_number] = set()
+        self.node_sharing_cliques[self.node_number] = set()
+        self.node_number += 1
+        self.add_clique(self.clique_number, Z)
+
+        table = clique.table.reshape(1,new_card)
+        #print("table:",table[0,2])
+        #print("origin",clique.table[0,1,0])
+        #print(table)
+        self.clique_number += 1
+        self.add_clique_table(self.clique_number -1, table)
+        #print("Z", Z.nodes_list, Z.table)
+
+        time = new_card
+        for node in clique.nodes_list:
+            labels = [node,label]
+            Z_x= Clique(2,labels)
+            #print(Z_x.nodes_list)
+            self.add_clique(self.clique_number, Z_x)
+            self.clique_number += 1
+            cardinality = self.variable_cardinality[node]
+            table = np.zeros((cardinality,new_card))
+            time = time/cardinality
+            y = 0
+            count = 0
+            for i in range(new_card):
+                table[y,i] =1
+                count += 1
+                if count == time:
+                    count = 0;
+                    y = (y+1)%cardinality
+            #print(table[2])
+            self.add_clique_table(self.clique_number -1, table)
+            #print("Z xi table", Z_x.nodes_list, Z_x.table.shape)

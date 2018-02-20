@@ -12,13 +12,15 @@ class junction_tree:
     def build_tree(self):
         edges = self.build_graph()
         self.MaximumSpanningTree(edges)
-        root = self.JT_nodes[-1]
+        root = self.JT_nodes[0]
         added = set()
         next_round = [root]
         while len(next_round) != 0:
             new_next_round = []
             for clique in next_round:
                 added.add(clique)
+                if clique not in self.next:
+                    continue
                 for adjacent_clique in self.next[clique]:
                     if adjacent_clique in added:
                         continue
@@ -42,9 +44,9 @@ class junction_tree:
         return edges
 
     def MaximumSpanningTree(self, edges):
-        print('*'*30)
-        for clique in self.JT_nodes:
-            print('JT node', clique.nodes)
+        #print('*'*30)
+        #for clique in self.JT_nodes:
+        #    print('JT node', clique.nodes)
         # print('before sort')
         # for edge in edges:
         #    print('edge', edge)
@@ -91,9 +93,7 @@ class junction_tree:
         #print('PostOrder')
         self.PostOrder(root, root)
         root.sum()
-        print('final result')
-        print(root.table)
-        print(np.log10(root.table))
+        print('Log(Z)',np.log(root.table))
 
     def PostOrder(self, root, father):
         if root in self.child:
